@@ -12,8 +12,8 @@ public class Algorithm {
         // find the white facelet on any side face, top corner, and rotate that layer until the adjacent color matches a center
         // if its to the left of the center, perform the left trigger
         // if its to the right of the center, perform the right trigger
-        // edge case 1:
-        // edge case 2:
+        // edge case 1: white facelet is adjacent to the white face
+        // edge case 2: white facelet is on the top face
     // step 4
     // step 5
     // step 6

@@ -55,12 +55,13 @@ public class Face {
     public void setColFacelets(int col, int[] arr){
         for(int row = 0; row<3; row++){
             facelets[row][col] = arr[row];
-            System.out.println("row and col");
         }
     }
     public void setRowFromCol(int row, int[] arr){
+        int counter = 0;
         for(int col = 2; col>=0; col--){
-            facelets[row][col] = arr[col];
+            facelets[row][col] = arr[counter];
+            counter ++;
         }
     }
 }
