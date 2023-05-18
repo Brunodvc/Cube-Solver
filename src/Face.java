@@ -6,10 +6,10 @@ public class Face {
     String orientation;
     HashMap<Integer, Integer> relativeOrientation = new HashMap<>();
     //constructor
-    public Face(int[][] facelets, String orientation ){
+    public Face(int[][] facelets, String orientation, HashMap<Integer, Integer> relativeOrientation){
         this.facelets = facelets;
         this.orientation = orientation;
-        //this.relativeOrientation = relativeOrientation;
+        this.relativeOrientation = relativeOrientation;
     }
     //getters and setters
 

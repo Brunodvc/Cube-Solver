@@ -6,26 +6,76 @@ public class Cube {
 
     public Cube(){
         faces = new Face[6];
+
+        // when you're facing yellow, red on top
         HashMap<Integer, Integer> topFaceRelativeOrientation = new HashMap<>();
-        /*
-        topFaceRelativeOrientation.put(0,);
-        topFaceRelativeOrientation.put(1,);
-        topFaceRelativeOrientation.put(2,);
-        topFaceRelativeOrientation.put(3,);
-        topFaceRelativeOrientation.put(4,);
-        topFaceRelativeOrientation.put(5,);
-         */
-        Face topFace = new Face(new int[][]{ {0,0,0}, {0,0,0}, {0,0,0}},"up");
+        //    (what you're referencing -> what you're actually rotating)
+        topFaceRelativeOrientation.put(0,5);
+        topFaceRelativeOrientation.put(1,1);
+        topFaceRelativeOrientation.put(2,0);
+        topFaceRelativeOrientation.put(3,3);
+        topFaceRelativeOrientation.put(4,5);
+        topFaceRelativeOrientation.put(5,4);
+        Face topFace = new Face(new int[][]{ {0,0,0}, {0,0,0}, {0,0,0}},"up", topFaceRelativeOrientation);
         faces[0] = topFace;
-        Face leftFace = new Face(new int[][]{ {1,1,1}, {1,1,1}, {1,1,1}}, "left");
+
+        // when you're facing green, yellow on top
+        HashMap<Integer, Integer> leftFaceRelativeOrientation = new HashMap<>();
+        //    (what you're referencing -> what you're actually rotating)
+        leftFaceRelativeOrientation.put(0,0);
+        leftFaceRelativeOrientation.put(1,2);
+        leftFaceRelativeOrientation.put(2,3);
+        leftFaceRelativeOrientation.put(3,5);
+        leftFaceRelativeOrientation.put(4,4);
+        leftFaceRelativeOrientation.put(5,1);
+        Face leftFace = new Face(new int[][]{ {1,1,1}, {1,1,1}, {1,1,1}}, "left", leftFaceRelativeOrientation);
         faces[1] = leftFace;
-        Face frontFace = new Face(new int[][]{ {2,2,2}, {2,2,2}, {2,2,2}}, "front");
+
+        // when you're facing orange, yellow on top
+        HashMap<Integer, Integer> frontFaceRelativeOrientation = new HashMap<>();
+        //    (what you're referencing -> what you're actually rotating)
+        frontFaceRelativeOrientation.put(0,0);
+        frontFaceRelativeOrientation.put(1,1);
+        frontFaceRelativeOrientation.put(2,2);
+        frontFaceRelativeOrientation.put(3,3);
+        frontFaceRelativeOrientation.put(4,4);
+        frontFaceRelativeOrientation.put(5,5);
+        Face frontFace = new Face(new int[][]{ {2,2,2}, {2,2,2}, {2,2,2}}, "front", frontFaceRelativeOrientation);
         faces[2] = frontFace;
-        Face rightFace = new Face(new int[][]{ {3,3,3}, {3,3,3}, {3,3,3}}, "right");
+
+        // when you're facing blue, yellow on top
+        HashMap<Integer, Integer> rightFaceRelativeOrientation = new HashMap<>();
+        //    (what you're referencing -> what you're actually rotating)
+        rightFaceRelativeOrientation.put(0,0);
+        rightFaceRelativeOrientation.put(1,5);
+        rightFaceRelativeOrientation.put(2,1);
+        rightFaceRelativeOrientation.put(3,2);
+        rightFaceRelativeOrientation.put(4,4);
+        rightFaceRelativeOrientation.put(5,3);
+        Face rightFace = new Face(new int[][]{ {3,3,3}, {3,3,3}, {3,3,3}}, "right",rightFaceRelativeOrientation);
         faces[3] = rightFace;
-        Face downFace = new Face(new int[][]{ {4,4,4}, {4,4,4}, {4,4,4}}, "down");
+
+        // when you're facing white, orange on top
+        HashMap<Integer, Integer> downFaceRelativeOrientation = new HashMap<>();
+        //    (what you're referencing -> what you're actually rotating)
+        downFaceRelativeOrientation.put(0,2);
+        downFaceRelativeOrientation.put(1,1);
+        downFaceRelativeOrientation.put(2,4);
+        downFaceRelativeOrientation.put(3,3);
+        downFaceRelativeOrientation.put(4,5);
+        downFaceRelativeOrientation.put(5,0);
+        Face downFace = new Face(new int[][]{ {4,4,4}, {4,4,4}, {4,4,4}}, "down",downFaceRelativeOrientation);
         faces[4] = downFace;
-        Face backFace = new Face(new int[][]{ {5,5,5}, {5,5,5}, {5,5,5}}, "back");
+
+        HashMap<Integer, Integer> backFaceRelativeOrientation = new HashMap<>();
+        //    (what you're referencing -> what you're actually rotating)
+        backFaceRelativeOrientation.put(0,0);
+        backFaceRelativeOrientation.put(1,3);
+        backFaceRelativeOrientation.put(2,5);
+        backFaceRelativeOrientation.put(3,1);
+        backFaceRelativeOrientation.put(4,4);
+        backFaceRelativeOrientation.put(5,2);
+        Face backFace = new Face(new int[][]{ {5,5,5}, {5,5,5}, {5,5,5}}, "back",backFaceRelativeOrientation);
         faces[5] = backFace;
     }
     // the below mappings might need to be updated
@@ -137,6 +187,15 @@ public class Cube {
         int[] copy = new int[3];
         for(int i = 0; i<3; i++){
             copy[i] = arr[i];
+        }
+        return copy;
+    }
+    public int[][] faceCopy(int[][] face){
+        int[][] copy = new int[3][3];
+        for(int row = 0; row<3; row++){
+            for(int col = 0; col<3; col++){
+                copy[row][col] = face[row][col];
+            }
         }
         return copy;
     }
@@ -327,6 +386,43 @@ public class Cube {
 
     }
 
+    public void rotateCubeLeft(){
+        System.out.println("rotate cube left");
+        faceClockwise(0);
+        faceCounterClockwise(4);
+
+        int[][] prevFront = faceCopy(faces[2].facelets);
+        int[][] prevLeft = faceCopy(faces[1].facelets);
+        int[][] prevBack = faceCopy(faces[5].facelets);
+        int[][] prevRight = faceCopy(faces[3].facelets);
+
+        faces[1].setFacelets(prevFront);
+        faces[2].setFacelets(prevRight);
+        faces[5].setFacelets(prevLeft);
+        faces[3].setFacelets(prevBack);
+    }
+    public void rotateCubeRight(){
+        System.out.println("rotate cube right");
+        faceCounterClockwise(0);
+        faceClockwise(4);
+
+        int[][] prevFront = faceCopy(faces[2].facelets);
+        int[][] prevLeft = faceCopy(faces[1].facelets);
+        int[][] prevBack = faceCopy(faces[5].facelets);
+        int[][] prevRight = faceCopy(faces[3].facelets);
+
+        faces[1].setFacelets(prevBack);
+        faces[2].setFacelets(prevLeft);
+        faces[5].setFacelets(prevRight);
+        faces[3].setFacelets(prevFront);
+    }
+    public void rotateCubeUp(){
+
+    }
+    public void rotateCubeDown(){
+
+    }
+
     public static void main(String[] args) {
         Cube cube = new Cube();
         cube.faces[0].setFacelets(new int[][]{{00,10,20},{30,40,50},{60,70,80}});
@@ -336,7 +432,9 @@ public class Cube {
         cube.faces[4].setFacelets(new int[][]{{04,14,24},{34,44,54},{64,74,84}});
         cube.faces[5].setFacelets(new int[][]{{05,15,25},{35,45,55},{65,75,85}});
         cube.printCube();
-        cube.backLayerClockwise();
+        cube.rotateCubeLeft();
+        cube.printCube();
+        cube.rotateCubeRight();
         cube.printCube();
     }
 }

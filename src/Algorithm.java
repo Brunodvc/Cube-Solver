@@ -18,8 +18,22 @@ public class Algorithm {
     // step 5
     // step 6
     // step 7
-    // step 8
+    // step 8 - swapping the top layer edge pieces
+        //
+
+
 
 
     //edit
+    public static void main(String[] args) {
+        Cube cube = new Cube();
+        cube.faces[0].setFacelets(new int[][]{{0,0,0},{0,0,0},{0,0,0}});
+        cube.faces[1].setFacelets(new int[][]{{1,3,1},{1,1,1},{1,1,1}});
+        cube.faces[2].setFacelets(new int[][]{{2,2,2},{2,2,2},{2,2,2}});
+        cube.faces[3].setFacelets(new int[][]{{3,5,3},{3,3,3},{3,3,3}});
+        cube.faces[4].setFacelets(new int[][]{{4,4,4},{4,4,4},{4,4,4}});
+        cube.faces[5].setFacelets(new int[][]{{5,1,5},{5,5,5},{5,5,5}});
+        cube.printCube();
+
+    }
 }
