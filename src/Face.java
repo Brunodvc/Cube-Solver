@@ -1,11 +1,15 @@
+import java.util.HashMap;
+
 public class Face {
     //properties
     int[][] facelets;
     String orientation;
+    HashMap<Integer, Integer> relativeOrientation = new HashMap<>();
     //constructor
-    public Face(int[][] facelets, String orientation){
+    public Face(int[][] facelets, String orientation ){
         this.facelets = facelets;
         this.orientation = orientation;
+        //this.relativeOrientation = relativeOrientation;
     }
     //getters and setters
 
@@ -28,9 +32,6 @@ public class Face {
     public int getFacelet(int row, int col){
         return facelets[row][col];
     }
-    public void setRow(int row, int[] facelets){
-        this.facelets[row] = facelets;
-    }
 
     public int[] getRightColFacelets(){
         int[] rightCol = new int[3];
@@ -52,12 +53,22 @@ public class Face {
     public int[] getBottomRowFacelets(){
         return facelets[2];
     }
-    public void setColFacelets(int col, int[] arr){
+    public void setCol(int col, int[] arr){
         for(int row = 0; row<3; row++){
             facelets[row][col] = arr[row];
         }
     }
-    public void setRowFromCol(int row, int[] arr){
+    public void setColInverse(int col, int[] arr){
+        int counter = 0;
+        for(int row = 2; row>=0; row--){
+            facelets[row][col] = arr[counter];
+            counter ++;
+        }
+    }
+    public void setRow(int row, int[] facelets){
+        this.facelets[row] = facelets;
+    }
+    public void setRowInverse(int row, int[] arr){
         int counter = 0;
         for(int col = 2; col>=0; col--){
             facelets[row][col] = arr[counter];

@@ -1,10 +1,20 @@
 import java.util.Arrays;
+import java.util.HashMap;
 
 public class Cube {
         Face[] faces;
 
     public Cube(){
         faces = new Face[6];
+        HashMap<Integer, Integer> topFaceRelativeOrientation = new HashMap<>();
+        /*
+        topFaceRelativeOrientation.put(0,);
+        topFaceRelativeOrientation.put(1,);
+        topFaceRelativeOrientation.put(2,);
+        topFaceRelativeOrientation.put(3,);
+        topFaceRelativeOrientation.put(4,);
+        topFaceRelativeOrientation.put(5,);
+         */
         Face topFace = new Face(new int[][]{ {0,0,0}, {0,0,0}, {0,0,0}},"up");
         faces[0] = topFace;
         Face leftFace = new Face(new int[][]{ {1,1,1}, {1,1,1}, {1,1,1}}, "left");
@@ -122,6 +132,15 @@ public class Cube {
             faces[face].updateFacelet(2,col, temp2);
         }
     }
+
+    public int[] arrayCopy(int[] arr){
+        int[] copy = new int[3];
+        for(int i = 0; i<3; i++){
+            copy[i] = arr[i];
+        }
+        return copy;
+    }
+    // works
     public void upLayerClockwise(){
         System.out.println("upLayer clockwise");
         faceClockwise(0);
@@ -137,6 +156,7 @@ public class Cube {
         faces[3].setRow(0,backFaceTopRow);
         faces[5].setRow(0, leftFaceTopRow);
     }
+    // works
     public void upLayerCounterClockwise(){
         System.out.println("upLayer counter clockwise");
         faceCounterClockwise(0);
@@ -152,13 +172,7 @@ public class Cube {
         faces[3].setRow(0,frontFaceTopRow);
         faces[5].setRow(0, rightFaceTopRow);
     }
-    public int[] arrayCopy(int[] arr){
-        int[] copy = new int[3];
-        for(int i = 0; i<3; i++){
-            copy[i] = arr[i];
-        }
-        return copy;
-    }
+    // works
     public void frontLayerClockwise(){
         System.out.println("front layer clockwise");
         faceClockwise(2);
@@ -171,11 +185,12 @@ public class Cube {
         // hard copies the top face to array to save it
        // System.arraycopy(faces[0].getBottomRowFacelets(), 0, topFaceBottomRow, 0, faces[0].getBottomRowFacelets().length);
 
-        faces[0].setRowFromCol(2, leftFaceRightColumn);
-        faces[1].setColFacelets(2, bottomFaceTopRow);
-        faces[3].setColFacelets(0, topFaceBottomRow);
-        faces[4].setRowFromCol(0, rightFaceLeftColumn);
+        faces[0].setRowInverse(2, leftFaceRightColumn);
+        faces[1].setCol(2, bottomFaceTopRow);
+        faces[3].setCol(0, topFaceBottomRow);
+        faces[4].setRowInverse(0, rightFaceLeftColumn);
     }
+    // works
     public void frontLayerCounterClockwise(){
         System.out.println("front layer counter clockwise");
         faceCounterClockwise(2);
@@ -186,33 +201,142 @@ public class Cube {
         int[] bottomFaceTopRow = arrayCopy(faces[4].getTopRowFacelets());
 
         faces[0].setRow(2, rightFaceLeftColumn);
-        faces[1].setColFacelets(2, topFaceBottomRow);
-        faces[3].setColFacelets(0, bottomFaceTopRow);
-        faces[4].setRowFromCol(0, leftFaceRightColumn);
+        faces[1].setCol(2, topFaceBottomRow);
+        faces[3].setCol(0, bottomFaceTopRow);
+        faces[4].setRowInverse(0, leftFaceRightColumn);
     }
-    // down face clockwise
-    // left face clockwise
-    // right face clockwise
-    // forward face clockwise
-    // back face clockwise
+    // works
+    public void rightLayerClockwise(){
+        System.out.println("right layer clockwise");
+        faceClockwise(3);
 
-    // up face counter-clockwise
-    // down face counter-clockwise
-    // left face counter-clockwise
-    // right face counter-clockwise
-    // forward face counter-clockwise
-    // back face counter-clockwise
+        //updating side facelets
+        int[] topFaceRightColumn = arrayCopy(faces[0].getRightColFacelets());
+        int[] backFaceLeftColumn = arrayCopy(faces[5].getLeftColFacelets());
+        int[] downFaceRightCol = arrayCopy(faces[4].getRightColFacelets());
+        int[] frontFaceRightCol = arrayCopy(faces[2].getRightColFacelets());
+
+        faces[5].setColInverse(0, topFaceRightColumn);
+        faces[0].setCol(2,frontFaceRightCol);
+        faces[4].setColInverse(2, backFaceLeftColumn);
+        faces[2].setCol(2,downFaceRightCol);
+
+    }
+    // works
+    public void rightLayerCounterClockwise(){
+        System.out.println("right layer counter clockwise");
+        faceCounterClockwise(3);
+
+        //updating side facelets
+        int[] topFaceRightColumn = arrayCopy(faces[0].getRightColFacelets());
+        int[] backFaceLeftColumn = arrayCopy(faces[5].getLeftColFacelets());
+        int[] downFaceRightCol = arrayCopy(faces[4].getRightColFacelets());
+        int[] frontFaceRightCol = arrayCopy(faces[2].getRightColFacelets());
+
+        faces[5].setColInverse(0,downFaceRightCol);
+        faces[0].setColInverse(2,backFaceLeftColumn);
+        faces[4].setCol(2, frontFaceRightCol);
+        faces[2].setCol(2,topFaceRightColumn);
+    }
+    // works
+    public void leftLayerClockwise(){
+        System.out.println("left layer clockwise");
+        faceClockwise(1);
+
+        //updating side facelets
+        int[] topFaceLeftColumn = arrayCopy(faces[0].getLeftColFacelets());
+        int[] backFaceRightColumn = arrayCopy(faces[5].getRightColFacelets());
+        int[] downFaceLeftCol = arrayCopy(faces[4].getLeftColFacelets());
+        int[] frontFaceRightCol = arrayCopy(faces[2].getLeftColFacelets());
+
+        faces[0].setCol(0, frontFaceRightCol);
+        faces[2].setCol(0, downFaceLeftCol);
+        faces[4].setColInverse(0, backFaceRightColumn);
+        faces[5].setColInverse(2, topFaceLeftColumn);
+    }
+    // works
+    public void leftLayerCounterClockwise(){
+        System.out.println("left layer counter clockwise");
+        faceCounterClockwise(1);
+
+        //updating side facelets
+        int[] topFaceLeftColumn = arrayCopy(faces[0].getLeftColFacelets());
+        int[] backFaceRightColumn = arrayCopy(faces[5].getRightColFacelets());
+        int[] downFaceLeftCol = arrayCopy(faces[4].getLeftColFacelets());
+        int[] frontFaceRightCol = arrayCopy(faces[2].getLeftColFacelets());
+
+        faces[0].setCol(0, frontFaceRightCol);
+        faces[2].setCol(0, downFaceLeftCol);
+        faces[4].setColInverse(0, backFaceRightColumn);
+        faces[5].setColInverse(2, topFaceLeftColumn);
+    }
+    // works
+    public void downLayerClockwise(){
+        System.out.println("down layer clockwise");
+        faceClockwise(4);
+
+        //updating side facelets
+        int[] leftFaceBottomRow = arrayCopy(faces[1].getBottomRowFacelets());
+        int[] backFaceBottomRow = arrayCopy(faces[5].getBottomRowFacelets());
+        int[] rightFaceBottomRow = arrayCopy(faces[3].getBottomRowFacelets());
+        int[] frontFaceBottomRow = arrayCopy(faces[2].getBottomRowFacelets());
+
+        faces[1].setRow(2, backFaceBottomRow);
+        faces[2].setRow(2, leftFaceBottomRow);
+        faces[3].setRow(2, frontFaceBottomRow);
+        faces[5].setRow(2, rightFaceBottomRow);
+    }
+    // works
+    public void downLayerCounterClockwise(){
+        System.out.println("down layer counter clockwise");
+        faceCounterClockwise(4);
+
+        //updating side facelets
+        int[] leftFaceBottomRow = arrayCopy(faces[1].getBottomRowFacelets());
+        int[] backFaceBottomRow = arrayCopy(faces[5].getBottomRowFacelets());
+        int[] rightFaceBottomRow = arrayCopy(faces[3].getBottomRowFacelets());
+        int[] frontFaceBottomRow = arrayCopy(faces[2].getBottomRowFacelets());
+
+        faces[1].setRow(2, frontFaceBottomRow);
+        faces[2].setRow(2, rightFaceBottomRow);
+        faces[3].setRow(2, backFaceBottomRow);
+        faces[5].setRow(2, leftFaceBottomRow);
+    }
+
+    public void backLayerClockwise(){
+        System.out.println("back layer clockwise");
+        faceClockwise(5);
+
+        //updating side facelets
+        int[] rightFaceRightColumn = arrayCopy(faces[3].getRightColFacelets());
+        int[] downFaceBottomRow = arrayCopy(faces[4].getBottomRowFacelets());
+        int[] leftFaceLeftColumn = arrayCopy(faces[1].getLeftColFacelets());
+        int[] topFaceTopRow = arrayCopy(faces[0].getTopRowFacelets());
+
+
+    }
+    public void backLayerCounterClockwise(){
+        System.out.println("back layer counter clockwise");
+        faceCounterClockwise(5);
+
+        //updating side facelets
+        int[] rightFaceRightColumn = arrayCopy(faces[3].getRightColFacelets());
+        int[] downFaceBottomRow = arrayCopy(faces[4].getBottomRowFacelets());
+        int[] leftFaceLeftColumn = arrayCopy(faces[1].getLeftColFacelets());
+        int[] topFaceTopRow = arrayCopy(faces[0].getTopRowFacelets());
+
+    }
+
     public static void main(String[] args) {
         Cube cube = new Cube();
-        cube.faces[0].setFacelets(new int[][]{{5,9,10},{12,23,34},{45,8,19}});
+        cube.faces[0].setFacelets(new int[][]{{00,10,20},{30,40,50},{60,70,80}});
+        cube.faces[1].setFacelets(new int[][]{{01,11,21},{31,41,51},{61,71,81}});
+        cube.faces[2].setFacelets(new int[][]{{02,12,22},{32,42,52},{62,72,82}});
+        cube.faces[3].setFacelets(new int[][]{{03,13,23},{33,43,53},{63,73,83}});
+        cube.faces[4].setFacelets(new int[][]{{04,14,24},{34,44,54},{64,74,84}});
+        cube.faces[5].setFacelets(new int[][]{{05,15,25},{35,45,55},{65,75,85}});
         cube.printCube();
-        cube.upLayerClockwise();
-        cube.printCube();
-        cube.upLayerCounterClockwise();
-        cube.printCube();
-        cube.frontLayerClockwise();
-        cube.printCube();
-        cube.frontLayerCounterClockwise();
+        cube.backLayerClockwise();
         cube.printCube();
     }
 }
