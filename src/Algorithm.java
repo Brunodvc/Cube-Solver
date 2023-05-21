@@ -19,8 +19,10 @@ public class Algorithm {
     // step 6
     // step 7
     // step 8 - swapping the top layer edge pieces
-        //
-
+        // face the completed side face away from you
+        // check if the side pieces need to be rotated clockwise or counterclockwise
+        //  clockwise - F2, U, R', L, F2, L', R, U, F2
+        // counterClockwise - F2, U', R', L, F2, L', R, U', F2
 
 
 

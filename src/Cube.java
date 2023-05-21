@@ -1,5 +1,6 @@
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.function.Function;
 
 public class Cube {
         Face[] faces;
@@ -199,6 +200,87 @@ public class Cube {
         }
         return copy;
     }
+
+    public Boolean faceCompleted(int face){
+        for(int row = 0; row<3; row++){
+            for(int col = 1; col<3; col++){
+                if((faces[face].getFacelet(row, col)%10) != (faces[face].getFacelet(0, 0)%10)){
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    public void applyRotations(String[] algorithm){
+        for(String s:algorithm){
+            if(s.equals("U")){
+                upLayerClockwise();
+            }
+            else if(s.equals("U'")){
+                upLayerCounterClockwise();
+            }
+            else if(s.equals("U2")){
+                upLayerClockwise();
+                upLayerClockwise();
+            }
+
+            else if(s.equals("F")){
+                frontLayerClockwise();
+            }
+            else if(s.equals("F'")){
+                frontLayerCounterClockwise();
+            }
+            else if(s.equals("F2")){
+                frontLayerClockwise();
+                frontLayerClockwise();
+            }
+
+            else if(s.equals("L")){
+                leftLayerClockwise();
+            }
+            else if(s.equals("L'")){
+                leftLayerCounterClockwise();
+            }
+            else if(s.equals("L2")){
+                leftLayerClockwise();
+                leftLayerClockwise();
+            }
+
+            else if(s.equals("R")){
+                rightLayerClockwise();
+            }
+            else if(s.equals("R'")){
+                rightLayerCounterClockwise();
+            }
+            else if(s.equals("R2")){
+                rightLayerClockwise();
+                rightLayerClockwise();
+            }
+
+            else if(s.equals("D")){
+                downLayerClockwise();
+            }
+            else if(s.equals("D'")){
+                downLayerCounterClockwise();
+            }
+            else if(s.equals("D2")){
+                downLayerClockwise();
+                downLayerClockwise();
+            }
+
+            else if(s.equals("B")){
+                backLayerClockwise();
+            }
+            else if(s.equals("B'")){
+                backLayerCounterClockwise();
+            }
+            else if(s.equals("B2")){
+                backLayerClockwise();
+                backLayerClockwise();
+            }
+        }
+    }
     // works
     public void upLayerClockwise(){
         System.out.println("upLayer clockwise");
@@ -230,6 +312,7 @@ public class Cube {
         faces[2].setRow(0, leftFaceTopRow);
         faces[3].setRow(0,frontFaceTopRow);
         faces[5].setRow(0, rightFaceTopRow);
+        printCube();
     }
     // works
     public void frontLayerClockwise(){
@@ -248,6 +331,7 @@ public class Cube {
         faces[1].setCol(2, bottomFaceTopRow);
         faces[3].setCol(0, topFaceBottomRow);
         faces[4].setRowInverse(0, rightFaceLeftColumn);
+        printCube();
     }
     // works
     public void frontLayerCounterClockwise(){
@@ -263,6 +347,7 @@ public class Cube {
         faces[1].setCol(2, topFaceBottomRow);
         faces[3].setCol(0, bottomFaceTopRow);
         faces[4].setRowInverse(0, leftFaceRightColumn);
+        printCube();
     }
     // works
     public void rightLayerClockwise(){
@@ -279,7 +364,7 @@ public class Cube {
         faces[0].setCol(2,frontFaceRightCol);
         faces[4].setColInverse(2, backFaceLeftColumn);
         faces[2].setCol(2,downFaceRightCol);
-
+        printCube();
     }
     // works
     public void rightLayerCounterClockwise(){
@@ -296,6 +381,7 @@ public class Cube {
         faces[0].setColInverse(2,backFaceLeftColumn);
         faces[4].setCol(2, frontFaceRightCol);
         faces[2].setCol(2,topFaceRightColumn);
+        printCube();
     }
     // works
     public void leftLayerClockwise(){
@@ -306,12 +392,13 @@ public class Cube {
         int[] topFaceLeftColumn = arrayCopy(faces[0].getLeftColFacelets());
         int[] backFaceRightColumn = arrayCopy(faces[5].getRightColFacelets());
         int[] downFaceLeftCol = arrayCopy(faces[4].getLeftColFacelets());
-        int[] frontFaceRightCol = arrayCopy(faces[2].getLeftColFacelets());
+        int[] frontFaceLeftCol = arrayCopy(faces[2].getLeftColFacelets());
 
-        faces[0].setCol(0, frontFaceRightCol);
-        faces[2].setCol(0, downFaceLeftCol);
-        faces[4].setColInverse(0, backFaceRightColumn);
-        faces[5].setColInverse(2, topFaceLeftColumn);
+        faces[0].setColInverse(0, backFaceRightColumn);
+        faces[2].setCol(0, topFaceLeftColumn);
+        faces[4].setCol(0, frontFaceLeftCol);
+        faces[5].setColInverse(2, downFaceLeftCol);
+        printCube();
     }
     // works
     public void leftLayerCounterClockwise(){
@@ -328,6 +415,7 @@ public class Cube {
         faces[2].setCol(0, downFaceLeftCol);
         faces[4].setColInverse(0, backFaceRightColumn);
         faces[5].setColInverse(2, topFaceLeftColumn);
+        printCube();
     }
     // works
     public void downLayerClockwise(){
@@ -400,6 +488,7 @@ public class Cube {
         faces[2].setFacelets(prevRight);
         faces[5].setFacelets(prevLeft);
         faces[3].setFacelets(prevBack);
+        printCube();
     }
     public void rotateCubeRight(){
         System.out.println("rotate cube right");
@@ -422,19 +511,80 @@ public class Cube {
     public void rotateCubeDown(){
 
     }
+    public Boolean shouldCycleClockWise(){
+        if((faces[3].getFacelet(0,1)%10 == faces[2].getFacelet(0,1)%10) ||
+                (faces[2].getFacelet(0,1)%10 == faces[1].getFacelet(0,1)%10) ||
+                (faces[1].getFacelet(0,1)%10 == faces[5].getFacelet(0,1)%10) ||
+                (faces[5].getFacelet(0,1)%10 == faces[3].getFacelet(0,1)%10)){
+            System.out.println("should cycle clockwise");
+            return true;
+        }
+        System.out.println("shouldn't cycle clockwise");
+        return false;
+    }
+    public void turnCompletedFaceAway(){
+        System.out.println("turn completed face away");
+        while(!faceCompleted(5)){
+            rotateCubeLeft();
+        }
+    }
+    // final step to solve cube
+    public void cycleTopLayerEdges(){
+        System.out.println("cycle top layer edges");
+        String[] clockWise = new String[]{"F2","U","R'","L","F2","L'","R", "U", "F2"};
+        String[] counterClockWise = new String[]{"F2","U'","R'","L","F2","L'","R", "U'", "F2"};
+        // three cases:
+        // none of the side faces solved -> CCW, turn completed face away then CCW again
+        if(!faceCompleted(1) && !faceCompleted(2) && !faceCompleted(3) && !faceCompleted(5)){
+            System.out.println("none of the faces completed");
+            applyRotations(counterClockWise);
+            System.out.println("one of the faces completed");
+            turnCompletedFaceAway();
+            System.out.println("completed face turned away");
+            applyRotations(counterClockWise);
+            System.out.println("cube completed");
+        }
+        // one of the faces solved other top layer edge pieces need to cycle CW -> cycle CW
+        else if(shouldCycleClockWise()){
+            turnCompletedFaceAway();
+            System.out.println("clockwise");
+            applyRotations(clockWise);
+        }
+        // one of the faces solved other top layer edge pieces need to cycle CCW -> cycle CCW
+        else{
+            turnCompletedFaceAway();
+            System.out.println("counter clockwise");
+            applyRotations(counterClockWise);
+        }
+    }
+
+
 
     public static void main(String[] args) {
         Cube cube = new Cube();
+        /*
+        HashMap<String, Runnable> map = new HashMap<>();
+        map.put("F2", () -> {
+            cube.frontLayerClockwise();
+            cube.frontLayerClockwise();
+        });
+         */
+        /*
         cube.faces[0].setFacelets(new int[][]{{00,10,20},{30,40,50},{60,70,80}});
         cube.faces[1].setFacelets(new int[][]{{01,11,21},{31,41,51},{61,71,81}});
         cube.faces[2].setFacelets(new int[][]{{02,12,22},{32,42,52},{62,72,82}});
         cube.faces[3].setFacelets(new int[][]{{03,13,23},{33,43,53},{63,73,83}});
         cube.faces[4].setFacelets(new int[][]{{04,14,24},{34,44,54},{64,74,84}});
         cube.faces[5].setFacelets(new int[][]{{05,15,25},{35,45,55},{65,75,85}});
+         */
+        cube.faces[0].setFacelets(new int[][]{{10,20,30},{40,50,60},{70,80,90}});
+        cube.faces[1].setFacelets(new int[][]{{11,23,31},{41,51,61},{71,81,91}});
+        cube.faces[2].setFacelets(new int[][]{{12,22,32},{42,52,62},{72,82,92}});
+        cube.faces[3].setFacelets(new int[][]{{13,25,33},{43,53,63},{73,83,93}});
+        cube.faces[4].setFacelets(new int[][]{{14,24,34},{44,54,64},{74,84,94}});
+        cube.faces[5].setFacelets(new int[][]{{15,21,35},{45,55,65},{75,85,95}});
         cube.printCube();
-        cube.rotateCubeLeft();
-        cube.printCube();
-        cube.rotateCubeRight();
+        cube.cycleTopLayerEdges();
         cube.printCube();
     }
 }
