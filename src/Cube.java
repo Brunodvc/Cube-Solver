@@ -345,9 +345,9 @@ public class Cube {
         int[] bottomFaceTopRow = arrayCopy(faces[4].getTopRowFacelets());
 
         faces[0].setRow(2, rightFaceLeftColumn);
-        faces[1].setCol(2, topFaceBottomRow);
-        faces[3].setCol(0, bottomFaceTopRow);
-        faces[4].setRowInverse(0, leftFaceRightColumn);
+        faces[1].setColInverse(2, topFaceBottomRow);
+        faces[3].setColInverse(0, bottomFaceTopRow);
+        faces[4].setRow(0, leftFaceRightColumn);
         printCube();
     }
     // works
@@ -520,6 +520,66 @@ public class Cube {
     }
 
 
+    public Boolean crossMade(){
+        return faces[0].getFacelet(0, 1) % 10 == 0 &&
+                faces[0].getFacelet(1, 0) % 10 == 0 &&
+                faces[0].getFacelet(1, 2) % 10 == 0 &&
+                faces[0].getFacelet(2, 1) % 10 == 0;
+    }
+    public Boolean isLine(){
+        return (faces[0].getFacelet(0, 1) % 10 == 0 &&
+                faces[0].getFacelet(2, 1) % 10 == 0) ||
+                (faces[0].getFacelet(1, 0) % 10 == 0 &&
+                faces[0].getFacelet(1, 2) % 10 == 0);
+    }
+    public int numYellowEdgeFacelets(){
+        int num = 0;
+        if(faces[0].getFacelet(0, 1) % 10 == 0){
+            num++;
+        }
+        if(faces[0].getFacelet(1, 0) % 10 == 0){
+            num++;
+        }
+        if(faces[0].getFacelet(1, 2) % 10 == 0){
+            num++;
+        }
+        if(faces[0].getFacelet(2, 1) % 10 == 0){
+            num++;
+        }
+        return num;
+    }
+    public void makeLineVertical(){
+        if(faces[0].getFacelet(1, 0) % 10 == 0 &&
+                faces[0].getFacelet(1, 2) % 10 == 0){
+            rotateCubeLeft();
+        }
+    }
+    public void putLonTopLeft(){
+        while (!(faces[0].getFacelet(0, 1) % 10 == 0 &&
+                faces[0].getFacelet(1, 0) % 10 == 0)){
+            upLayerClockwise();
+        }
+    }
+    // step 5 - make the yellow cross
+    public void makeYellowCross(){
+        String[] yellowCross = new String[]{"F","U","R","U'","R'","F'"};
+        while(!crossMade()) {
+            if (numYellowEdgeFacelets() == 0) {
+                applyRotations(yellowCross);
+            }
+            if(isLine()){
+                makeLineVertical();
+                applyRotations(yellowCross);
+            }
+            // only case left is if the yellow edges make an L
+            else{
+                putLonTopLeft();
+                applyRotations(yellowCross);
+            }
+        }
+    }
+
+
     public void rotateTopLayerTillYellowInRightSpot(){
         System.out.println("rotate top layer till yellow in right spot");
         while(faces[1].getFacelet(0,2)%10 != 0){
@@ -688,19 +748,19 @@ public class Cube {
         cube.faces[4].setFacelets(new int[][]{{04,14,24},{34,44,54},{64,74,84}});
         cube.faces[5].setFacelets(new int[][]{{05,15,25},{35,45,55},{65,75,85}});
          */
-        cube.faces[0].setFacelets(new int[][]{  {12,20,35},
-                                                {40,50,60},
-                                                {70,80,91}});
+        cube.faces[0].setFacelets(new int[][]{  {12,20,33},
+                                                {45,50,62},
+                                                {72,80,91}});
 
-        cube.faces[1].setFacelets(new int[][]{  {11,22,32},
+        cube.faces[1].setFacelets(new int[][]{  {11,20,33},
                                                 {41,51,61},
                                                 {71,81,91}});
 
-        cube.faces[2].setFacelets(new int[][]{  {13,21,30},
+        cube.faces[2].setFacelets(new int[][]{  {10,23,30},
                                                 {42,52,62},
                                                 {72,82,92}});
 
-        cube.faces[3].setFacelets(new int[][]{  {15,25,30},
+        cube.faces[3].setFacelets(new int[][]{  {15,20,35},
                                                 {43,53,63},
                                                 {73,83,93}});
 
@@ -708,9 +768,13 @@ public class Cube {
                                                 {44,54,64},
                                                 {74,84,94}});
 
-        cube.faces[5].setFacelets(new int[][]{  {13,23,30},
+        cube.faces[5].setFacelets(new int[][]{  {10,21,30},
                                                 {45,55,65},
                                                 {75,85,95}});
+        cube.printCube();
+        cube.makeYellowCross();
+        cube.printCube();
+
         cube.printCube();
         cube.solveYellowFace();
         cube.printCube();
@@ -718,6 +782,9 @@ public class Cube {
         cube.printCube();
         cube.cycleTopLayerEdges();
         cube.printCube();
+
+
+
     }
 }
 
