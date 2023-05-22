@@ -296,6 +296,7 @@ public class Cube {
         faces[2].setRow(0, rightFaceTopRow);
         faces[3].setRow(0,backFaceTopRow);
         faces[5].setRow(0, leftFaceTopRow);
+        printCube();
     }
     // works
     public void upLayerCounterClockwise(){
@@ -511,6 +512,101 @@ public class Cube {
     public void rotateCubeDown(){
 
     }
+    public Boolean isCubeSolved(){
+        if(faceCompleted(0) && faceCompleted(1) && faceCompleted(2) && faceCompleted(3) && faceCompleted(4) && faceCompleted(5)){
+            return true;
+        }
+        return false;
+    }
+
+
+    public void rotateTopLayerTillYellowInRightSpot(){
+        System.out.println("rotate top layer till yellow in right spot");
+        while(faces[1].getFacelet(0,2)%10 != 0){
+            upLayerClockwise();
+        }
+    }
+    public int numYellowCornerFacelets(){
+        System.out.println("num yellow corner facelets");
+        int num = 0;
+        if(faces[0].getFacelet(0,0)%10 == 0){
+            num++;
+        }
+        if(faces[0].getFacelet(0,2)%10 == 0){
+            num++;
+        }
+        if(faces[0].getFacelet(2,0)%10 == 0){
+            num++;
+        }
+        if(faces[0].getFacelet(2,2)%10 == 0){
+            num++;
+        }
+        return num;
+    }
+    public void rotateFishDownLeft(){
+        System.out.println("rotate fish down left");
+        while(faces[0].getFacelet(2,0)%10 != 0){
+            upLayerClockwise();
+        }
+    }
+    // step 6 - solve the yellow face
+    public void solveYellowFace(){
+        System.out.println("solve yellow face");
+        String[] solveTopFace = new String[]{"R","U","R'","U","R","U2","R'"};
+        while(!faceCompleted(0)) {
+            System.out.println("face not completed");
+            if (numYellowCornerFacelets() == 0 || numYellowCornerFacelets() == 2) {
+                System.out.println("not fish");
+                rotateTopLayerTillYellowInRightSpot();
+                applyRotations(solveTopFace);
+            }
+            else if (numYellowCornerFacelets() == 1) {
+                System.out.println("fish");
+                rotateFishDownLeft();
+                applyRotations(solveTopFace);
+            }
+        }
+    }
+
+
+    public Boolean isCornersMatching(int face){
+        System.out.println("is corners matching");
+        return faces[face].getFacelet(0, 0)%10 == faces[face].getFacelet(0, 2)%10;
+    }
+    public void rotateTillLeftFaceCornersMatch(){
+        System.out.println("rotate Till Left Face Corners Match");
+        while(!isCornersMatching(1)){
+            rotateCubeLeft();
+        }
+    }
+    public void rotateTopLayerTillCornerPiecesAreInTheRightPlace(){
+        System.out.println("rotate Top Layer Till Corner Pieces Are In The Right Place");
+        while(faces[2].getFacelet(0,0)%10 != faces[2].getFacelet(1,0)%10){
+            upLayerClockwise();
+        }
+
+    }
+    // step 7 - position the corners
+    public void positionTheCorners(){
+        System.out.println("position corners");
+        String[] positionCorners = new String[]{"L'","U","R","U'","L","U","R'","R","U","R'","U","R","U2","R'"};
+        // two cases:
+        // no side faces have matching corners -> perform algorithm, rotate cube till that face is in left, then perform algorithm
+        if(!isCornersMatching(1) && !isCornersMatching(2) && !isCornersMatching(3) && !isCornersMatching(5)){
+            System.out.println("no matching corners");
+            applyRotations(positionCorners);
+            rotateTillLeftFaceCornersMatch();
+            applyRotations(positionCorners);
+        }
+        // one of the side faces has matching corners -> rotate cube till that face is in left, then perform algorithm
+        else{
+            rotateTillLeftFaceCornersMatch();
+            applyRotations(positionCorners);
+        }
+        rotateTopLayerTillCornerPiecesAreInTheRightPlace();
+    }
+
+
     public Boolean shouldCycleClockWise(){
         if((faces[3].getFacelet(0,1)%10 == faces[2].getFacelet(0,1)%10) ||
                 (faces[2].getFacelet(0,1)%10 == faces[1].getFacelet(0,1)%10) ||
@@ -528,7 +624,7 @@ public class Cube {
             rotateCubeLeft();
         }
     }
-    // final step to solve cube
+    // Step 8 - position the edges
     public void cycleTopLayerEdges(){
         System.out.println("cycle top layer edges");
         String[] clockWise = new String[]{"F2","U","R'","L","F2","L'","R", "U", "F2"};
@@ -540,8 +636,20 @@ public class Cube {
             applyRotations(counterClockWise);
             System.out.println("one of the faces completed");
             turnCompletedFaceAway();
-            System.out.println("completed face turned away");
-            applyRotations(counterClockWise);
+            System.out.println("completed face turned away, cycle edges counterclockwise");
+            if(shouldCycleClockWise()){
+                turnCompletedFaceAway();
+                System.out.println("clockwise");
+                applyRotations(clockWise);
+            }
+            // one of the faces solved other top layer edge pieces need to cycle CCW -> cycle CCW
+            else{
+                turnCompletedFaceAway();
+                System.out.println("counter clockwise");
+                while(!isCubeSolved()){
+                    applyRotations(counterClockWise);
+                }
+            }
             System.out.println("cube completed");
         }
         // one of the faces solved other top layer edge pieces need to cycle CW -> cycle CW
@@ -554,9 +662,12 @@ public class Cube {
         else{
             turnCompletedFaceAway();
             System.out.println("counter clockwise");
-            applyRotations(counterClockWise);
+            while(!isCubeSolved()){
+                applyRotations(counterClockWise);
+            }
         }
     }
+
 
 
 
@@ -577,12 +688,33 @@ public class Cube {
         cube.faces[4].setFacelets(new int[][]{{04,14,24},{34,44,54},{64,74,84}});
         cube.faces[5].setFacelets(new int[][]{{05,15,25},{35,45,55},{65,75,85}});
          */
-        cube.faces[0].setFacelets(new int[][]{{10,20,30},{40,50,60},{70,80,90}});
-        cube.faces[1].setFacelets(new int[][]{{11,23,31},{41,51,61},{71,81,91}});
-        cube.faces[2].setFacelets(new int[][]{{12,22,32},{42,52,62},{72,82,92}});
-        cube.faces[3].setFacelets(new int[][]{{13,25,33},{43,53,63},{73,83,93}});
-        cube.faces[4].setFacelets(new int[][]{{14,24,34},{44,54,64},{74,84,94}});
-        cube.faces[5].setFacelets(new int[][]{{15,21,35},{45,55,65},{75,85,95}});
+        cube.faces[0].setFacelets(new int[][]{  {12,20,35},
+                                                {40,50,60},
+                                                {70,80,91}});
+
+        cube.faces[1].setFacelets(new int[][]{  {11,22,32},
+                                                {41,51,61},
+                                                {71,81,91}});
+
+        cube.faces[2].setFacelets(new int[][]{  {13,21,30},
+                                                {42,52,62},
+                                                {72,82,92}});
+
+        cube.faces[3].setFacelets(new int[][]{  {15,25,30},
+                                                {43,53,63},
+                                                {73,83,93}});
+
+        cube.faces[4].setFacelets(new int[][]{  {14,24,34},
+                                                {44,54,64},
+                                                {74,84,94}});
+
+        cube.faces[5].setFacelets(new int[][]{  {13,23,30},
+                                                {45,55,65},
+                                                {75,85,95}});
+        cube.printCube();
+        cube.solveYellowFace();
+        cube.printCube();
+        cube.positionTheCorners();
         cube.printCube();
         cube.cycleTopLayerEdges();
         cube.printCube();
