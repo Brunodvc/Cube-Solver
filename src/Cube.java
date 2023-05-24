@@ -86,6 +86,9 @@ public class Cube {
     // 3 -> blue(right)
     // 4 -> white(down)
     // 5 -> red(back)
+    String[] leftTrigger = new String[]{"L'","U'","L"};
+    String[] rightTrigger = new String[]{"R","U","R'"};
+
     public void scrambleCube(){
         // I can't just put random colored facelets in random locations because that could lead to an impossible cube
     }
@@ -519,6 +522,87 @@ public class Cube {
         return false;
     }
 
+    public boolean isValidPieceInRightSpot(int face){
+        System.out.println(faces[0].getFacelet(2,1));
+        System.out.println(faces[face].getFacelet(0,1));
+        return faces[0].getFacelet(2,1)%10 != 0 &&
+                faces[face].getFacelet(0,1)%10 == faces[face].getFacelet(1,1)%10;
+    }
+    public boolean middleRowSolved(int face){
+        return (faces[face].getFacelet(1,0)%10 == faces[face].getFacelet(1,1)%10)
+                && (faces[face].getFacelet(1,1)%10 == faces[face].getFacelet(1,2)%10);
+    }
+    public boolean secondLayerSolved(){
+        return middleRowSolved(1) && middleRowSolved(2) &&
+                middleRowSolved(3) && middleRowSolved(5);
+    }
+    public boolean validEdgePieces(){
+        // if there are valid edge pieces return true
+        if(faces[0].getFacelet(0,1)%10 != 0 && faces[5].getFacelet(0,1)%10 != 0 &&
+                faces[0].getFacelet(1,0)%10 != 0 && faces[1].getFacelet(0,1)%10 != 0 &&
+                faces[0].getFacelet(2,1)%10 != 0 && faces[2].getFacelet(0,1)%10 != 0 &&
+                faces[0].getFacelet(1,2)%10 != 0 && faces[3].getFacelet(0,1)%10 != 0){
+            System.out.println(" there are valid edge pieces");
+            return true;
+        }
+        System.out.println(" THERE ARE NO VALID EDGE PIECES");
+        return false;
+    }
+    public void takeOutPiece(){
+        for(int i = 0; i<4; i++){
+            // right
+            if(faces[0].getFacelet(1,2)%10 != faces[0].getFacelet(1,1)%10){
+                System.out.println("right trigger");
+                applyRotations(rightTrigger);
+                return;
+            }
+            // left
+            if(faces[0].getFacelet(1,0)%10 != faces[0].getFacelet(1,1)%10){
+                System.out.println("left trigger");
+                applyRotations(leftTrigger);
+                return;
+            }
+            rotateCubeLeft();
+        }
+    }
+
+
+    // step 4 - solve the second layer
+    public void solveSecondLayer(){
+        String[] toTheRight = new String[]{"U","R","U","R'","U'","F'","U'","F"};
+        String[] toTheLeft = new String[]{"U'","L'","U'","L","U","F","U","F'"};
+        System.out.println(" ^^^^^^^^^ THIS IS THE START ^^^^^^^^^^");
+        xLoop:
+        for (int i = 0; i < 4; i++) { // face
+            System.out.println("i: " + i);
+            for (int j = 0; j < 4; j++) { //turn top layer
+                System.out.println("j: " + j);
+                if (isValidPieceInRightSpot(2)) {
+                    System.out.println("valid piece in right spot");
+
+                                // top facelet matches with right face
+                    if (faces[0].getFacelet(2, 1) % 10 == faces[3].getFacelet(1, 1) % 10) {
+                                    System.out.println("top facelet matches with right face");
+                                    applyRotations(toTheRight);
+                                    break xLoop;
+                    }
+                                // top facelet matches with the left face
+                    else {
+                                    System.out.println("top facelet matches with left face");
+                                    applyRotations(toTheLeft);
+                                    break xLoop;
+                    }
+                }
+                System.out.println("Checking with another uplayerClockwise");
+                upLayerClockwise();
+            }
+            System.out.println("checking with another cube rotation left");
+            rotateCubeLeft();
+        }
+        System.out.println(" *********** again **********");
+
+    }
+
 
     public Boolean crossMade(){
         return faces[0].getFacelet(0, 1) % 10 == 0 &&
@@ -578,6 +662,7 @@ public class Cube {
             }
         }
     }
+
 
 
     public void rotateTopLayerTillYellowInRightSpot(){
@@ -748,33 +833,37 @@ public class Cube {
         cube.faces[4].setFacelets(new int[][]{{04,14,24},{34,44,54},{64,74,84}});
         cube.faces[5].setFacelets(new int[][]{{05,15,25},{35,45,55},{65,75,85}});
          */
-        cube.faces[0].setFacelets(new int[][]{  {12,20,33},
-                                                {45,50,62},
-                                                {72,80,91}});
+        cube.faces[0].setFacelets(new int[][]{  {15,25,35},
+                                                {42,50,60},
+                                                {70,81,90}});
 
-        cube.faces[1].setFacelets(new int[][]{  {11,20,33},
+        cube.faces[1].setFacelets(new int[][]{  {13,23,32},
                                                 {41,51,61},
                                                 {71,81,91}});
 
-        cube.faces[2].setFacelets(new int[][]{  {10,23,30},
-                                                {42,52,62},
+        cube.faces[2].setFacelets(new int[][]{  {13,20,31},
+                                                {42,52,60},
                                                 {72,82,92}});
 
-        cube.faces[3].setFacelets(new int[][]{  {15,20,35},
-                                                {43,53,63},
+        cube.faces[3].setFacelets(new int[][]{  {12,23,31},
+                                                {42,53,63},
                                                 {73,83,93}});
 
         cube.faces[4].setFacelets(new int[][]{  {14,24,34},
                                                 {44,54,64},
                                                 {74,84,94}});
 
-        cube.faces[5].setFacelets(new int[][]{  {10,21,30},
+        cube.faces[5].setFacelets(new int[][]{  {10,20,30},
                                                 {45,55,65},
                                                 {75,85,95}});
+
+        cube.printCube();
+        cube.solveSecondLayer();
+        cube.printCube();
+        /*
         cube.printCube();
         cube.makeYellowCross();
         cube.printCube();
-
         cube.printCube();
         cube.solveYellowFace();
         cube.printCube();
@@ -782,6 +871,8 @@ public class Cube {
         cube.printCube();
         cube.cycleTopLayerEdges();
         cube.printCube();
+
+         */
 
 
 
