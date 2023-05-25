@@ -3,7 +3,7 @@ import java.util.HashMap;
 import java.util.function.Function;
 
 public class Cube {
-        Face[] faces;
+    public Face[] faces;
 
     public Cube(){
         faces = new Face[6];
@@ -154,12 +154,14 @@ public class Cube {
 
     public Boolean faceCompleted(int face){
         for(int row = 0; row<3; row++){
-            for(int col = 1; col<3; col++){
-                if((faces[face].getFacelet(row, col)%10) != (faces[face].getFacelet(0, 0)%10)){
+            for(int col = 0; col<3; col++){
+                if((faces[face].getFacelet(row, col)%10) != (faces[face].getFacelet(1, 1)%10)){
+                    System.out.println(" face not completed");
                     return false;
                 }
             }
         }
+        System.out.println(" face completed");
         return true;
     }
 
@@ -468,6 +470,93 @@ public class Cube {
             return true;
         }
         return false;
+    }
+
+
+
+    // careful this method requires that the bottom layer isn't solved, and the top face has a white piece
+    public void placeWhiteOverNonWhite(){
+        System.out.println("place white over non white");
+        while(faces[4].getFacelet(0,2)%10 == 4){
+            rotateCubeLeft();
+        }
+        while(faces[0].getFacelet(2,2)%10 != 4){
+            upLayerClockwise();
+        }
+    }
+    public boolean topFaceContainsWhite(){
+        for(int i = 0; i<3; i++){
+            for(int j = 0; j<3; j++){
+                if(faces[0].getFacelet(i,j)%10==4){
+                    System.out.println("top face contains white");
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    public void takeOutPieceFromTopFaceIfNeeded(){
+        if(topFaceContainsWhite()){
+            System.out.println(" take out piece from top face");
+            placeWhiteOverNonWhite();
+            System.out.println("right trigger twice");
+            applyRotations(rightTrigger);
+            applyRotations(rightTrigger);
+        }
+    }
+
+    public void takeOutWhitePieceFromBottomIfNeeded(){
+
+        for(int i = 0; i<4; i++){
+            // white piece on bottom layer and on right
+            if(faces[2].getFacelet(2,2)%10 == 4){
+                System.out.println("Taking out white piece from bottom right");
+                applyRotations(rightTrigger);
+            }
+            // white piece on bottom layer and on left
+            if(faces[2].getFacelet(2,0)%10 == 4){
+                System.out.println("Taking out white piece from bottom left");
+                applyRotations(leftTrigger);
+            }
+            rotateCubeLeft();
+        }
+    }
+
+    // step 3 - solve the bottom layer
+    public void solveBottomLayer(){
+        System.out.println("solve the bottom layer");
+        while(!faceCompleted(4)){
+            System.out.println("_________ again ________");
+            xLoop:
+            for(int i = 0; i<4; i++){
+                for(int j = 0; j<4; j++){
+                    // white on right face
+                    if(faces[2].getFacelet(0,2)%10 == faces[2].getFacelet(1,1)%10 &&
+                    faces[3].getFacelet(0,0)%10 == 4){
+                        System.out.println("white on right face and color on top right of front face");
+                        applyRotations(rightTrigger);
+                        System.out.println("break out of xLoop right");
+                        break xLoop;
+                    }
+                    // white on left face
+                    if(faces[2].getFacelet(0,0)%10 == faces[2].getFacelet(1,1)%10 &&
+                            faces[1].getFacelet(0,2)%10 == 4){
+                        System.out.println("white on left face and color on top left of front face");
+                        applyRotations(leftTrigger);
+                        System.out.println("break out of xLoop left");
+                        break xLoop;
+                    }
+                    System.out.println("Checking with another uplayerClockwise");
+                    upLayerClockwise();
+                }
+                System.out.println("checking with another cube rotation left");
+                rotateCubeLeft();
+            }
+            takeOutWhitePieceFromBottomIfNeeded();
+            takeOutPieceFromTopFaceIfNeeded();
+            System.out.println(" (((((((    again   )))))");
+        }
+        System.out.println("finished");
     }
 
     public boolean isValidPieceInRightSpot(int face){
@@ -794,33 +883,35 @@ public class Cube {
         cube.faces[4].setFacelets(new int[][]{{04,14,24},{34,44,54},{64,74,84}});
         cube.faces[5].setFacelets(new int[][]{{05,15,25},{35,45,55},{65,75,85}});
          */
-        cube.faces[0].setFacelets(new int[][]{  {10,20,32},
-                                                {42,50,62},
-                                                {72,85,90}});
+        cube.faces[0].setFacelets(new int[][]{  {11,20,30},
+                                                {43,50,65},
+                                                {75,80,94}});
 
-        cube.faces[1].setFacelets(new int[][]{  {11,21,33},
-                                                {40,51,60},
-                                                {71,81,91}});
+        cube.faces[1].setFacelets(new int[][]{  {12,20,33},
+                                                {41,51,61},
+                                                {73,81,90}});
 
-        cube.faces[2].setFacelets(new int[][]{  {10,23,33},
-                                                {45,52,65},
-                                                {72,82,92}});
+        cube.faces[2].setFacelets(new int[][]{  {14,25,31},
+                                                {45,52,62},
+                                                {72,82,93}});
 
-        cube.faces[3].setFacelets(new int[][]{  {15,23,30},
-                                                {41,53,62},
-                                                {73,83,93}});
+        cube.faces[3].setFacelets(new int[][]{  {15,23,35},
+                                                {40,53,63},
+                                                {72,83,93}});
 
-        cube.faces[4].setFacelets(new int[][]{  {14,24,34},
+        cube.faces[4].setFacelets(new int[][]{  {11,24,30},
                                                 {44,54,64},
-                                                {74,84,94}});
+                                                {74,84,95}});
 
-        cube.faces[5].setFacelets(new int[][]{  {11,23,35},
-                                                {40,55,61},
-                                                {75,85,95}});
+        cube.faces[5].setFacelets(new int[][]{  {11,21,34},
+                                                {42,55,62},
+                                                {70,85,92}});
 
         cube.printCube();
-        cube.solveSecondLayer();
+        cube.solveBottomLayer();
         cube.printCube();
+       // cube.solveSecondLayer();
+        // cube.printCube();
 /*
         cube.printCube();
         cube.makeYellowCross();
