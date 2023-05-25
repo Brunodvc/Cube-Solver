@@ -1,8 +1,10 @@
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
-public class Display {
+public class Display implements ActionListener{
 
     // JFrame BorderLayout Example
     public static void border() {
@@ -16,6 +18,7 @@ public class Display {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         // 3. Create components and put them in the frame
+        Cube cube = new Cube();
         JLabel instructions = new JLabel("set up the cube configuration (what color each facelet is)" +
                 " by clicking each button and choosing a color");
         frame.add(instructions, BorderLayout.NORTH);
@@ -26,29 +29,35 @@ public class Display {
         JLabel rotations = new JLabel("rotations to solve the cube");
         frame.add(rotations, BorderLayout.WEST);
 
-        JLabel rotationControl = new JLabel("Rotation control");
-        frame.add(rotationControl, BorderLayout.EAST);
+        JPanel controlPanel = new JPanel();
+        JLabel label = new JLabel("Rotation control");
+        controlPanel.add(label);
+        JButton upLayerClockwise = new JButton("upLayerClockwise");
+        //upLayerClockwise.addActionListener(this);
+        controlPanel.add(upLayerClockwise);
+        frame.add(controlPanel, BorderLayout.EAST);
 
 
         JPanel cubePanel = new JPanel();
         cubePanel.setLayout(new BoxLayout(cubePanel, BoxLayout.Y_AXIS));
-        FacePanel up = new FacePanel("up");
+        FacePanel up = new FacePanel("up", cube.faces[0].facelets);
         cubePanel.add(up);
 
-        JPanel leftForwardRight = new JPanel();
-        leftForwardRight.setLayout(new BoxLayout(leftForwardRight, BoxLayout.X_AXIS));
-        FacePanel left = new FacePanel("left");
-        FacePanel forward = new FacePanel("forward");
-        FacePanel right = new FacePanel("right");
-        leftForwardRight.add(left);
-        leftForwardRight.add(forward);
-        leftForwardRight.add(right);
-        cubePanel.add(leftForwardRight);
+        JPanel leftForwardRightBack = new JPanel();
+        leftForwardRightBack.setLayout(new BoxLayout(leftForwardRightBack, BoxLayout.X_AXIS));
+        FacePanel left = new FacePanel("left",cube.faces[1].facelets);
+        FacePanel forward = new FacePanel("forward",cube.faces[2].facelets);
+        FacePanel right = new FacePanel("right",cube.faces[3].facelets);
+        FacePanel behind = new FacePanel("behind",cube.faces[5].facelets);
+        leftForwardRightBack.add(left);
+        leftForwardRightBack.add(forward);
+        leftForwardRightBack.add(right);
+        leftForwardRightBack.add(behind);
+        cubePanel.add(leftForwardRightBack);
 
-        FacePanel bottom = new FacePanel("bottom");
+        FacePanel bottom = new FacePanel("bottom",cube.faces[4].facelets);
         cubePanel.add(bottom);
-        FacePanel behind = new FacePanel("behind");
-        cubePanel.add(behind);
+
 
         frame.add(cubePanel, BorderLayout.CENTER);
 
@@ -63,6 +72,11 @@ public class Display {
 
     public static void main(String[] args) {
         border();
+
     }
 
+    @Override
+    public void actionPerformed(ActionEvent e) {
+
+    }
 }

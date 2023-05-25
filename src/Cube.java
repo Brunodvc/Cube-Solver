@@ -8,75 +8,23 @@ public class Cube {
     public Cube(){
         faces = new Face[6];
 
-        // when you're facing yellow, red on top
-        HashMap<Integer, Integer> topFaceRelativeOrientation = new HashMap<>();
-        //    (what you're referencing -> what you're actually rotating)
-        topFaceRelativeOrientation.put(0,5);
-        topFaceRelativeOrientation.put(1,1);
-        topFaceRelativeOrientation.put(2,0);
-        topFaceRelativeOrientation.put(3,3);
-        topFaceRelativeOrientation.put(4,5);
-        topFaceRelativeOrientation.put(5,4);
-        Face topFace = new Face(new int[][]{ {0,0,0}, {0,0,0}, {0,0,0}},"up", topFaceRelativeOrientation);
+        Face topFace = new Face(new int[][]{ {0,0,0}, {0,0,0}, {0,0,0}},"up");
         faces[0] = topFace;
 
-        // when you're facing green, yellow on top
-        HashMap<Integer, Integer> leftFaceRelativeOrientation = new HashMap<>();
-        //    (what you're referencing -> what you're actually rotating)
-        leftFaceRelativeOrientation.put(0,0);
-        leftFaceRelativeOrientation.put(1,2);
-        leftFaceRelativeOrientation.put(2,3);
-        leftFaceRelativeOrientation.put(3,5);
-        leftFaceRelativeOrientation.put(4,4);
-        leftFaceRelativeOrientation.put(5,1);
-        Face leftFace = new Face(new int[][]{ {1,1,1}, {1,1,1}, {1,1,1}}, "left", leftFaceRelativeOrientation);
+        Face leftFace = new Face(new int[][]{ {1,1,1}, {1,1,1}, {1,1,1}}, "left");
         faces[1] = leftFace;
 
-        // when you're facing orange, yellow on top
-        HashMap<Integer, Integer> frontFaceRelativeOrientation = new HashMap<>();
-        //    (what you're referencing -> what you're actually rotating)
-        frontFaceRelativeOrientation.put(0,0);
-        frontFaceRelativeOrientation.put(1,1);
-        frontFaceRelativeOrientation.put(2,2);
-        frontFaceRelativeOrientation.put(3,3);
-        frontFaceRelativeOrientation.put(4,4);
-        frontFaceRelativeOrientation.put(5,5);
-        Face frontFace = new Face(new int[][]{ {2,2,2}, {2,2,2}, {2,2,2}}, "front", frontFaceRelativeOrientation);
+        Face frontFace = new Face(new int[][]{ {2,2,2}, {2,2,2}, {2,2,2}}, "front");
         faces[2] = frontFace;
 
-        // when you're facing blue, yellow on top
-        HashMap<Integer, Integer> rightFaceRelativeOrientation = new HashMap<>();
-        //    (what you're referencing -> what you're actually rotating)
-        rightFaceRelativeOrientation.put(0,0);
-        rightFaceRelativeOrientation.put(1,5);
-        rightFaceRelativeOrientation.put(2,1);
-        rightFaceRelativeOrientation.put(3,2);
-        rightFaceRelativeOrientation.put(4,4);
-        rightFaceRelativeOrientation.put(5,3);
-        Face rightFace = new Face(new int[][]{ {3,3,3}, {3,3,3}, {3,3,3}}, "right",rightFaceRelativeOrientation);
+        Face rightFace = new Face(new int[][]{ {3,3,3}, {3,3,3}, {3,3,3}}, "right");
         faces[3] = rightFace;
 
-        // when you're facing white, orange on top
-        HashMap<Integer, Integer> downFaceRelativeOrientation = new HashMap<>();
-        //    (what you're referencing -> what you're actually rotating)
-        downFaceRelativeOrientation.put(0,2);
-        downFaceRelativeOrientation.put(1,1);
-        downFaceRelativeOrientation.put(2,4);
-        downFaceRelativeOrientation.put(3,3);
-        downFaceRelativeOrientation.put(4,5);
-        downFaceRelativeOrientation.put(5,0);
-        Face downFace = new Face(new int[][]{ {4,4,4}, {4,4,4}, {4,4,4}}, "down",downFaceRelativeOrientation);
+        Face downFace = new Face(new int[][]{ {4,4,4}, {4,4,4}, {4,4,4}}, "down");
         faces[4] = downFace;
 
         HashMap<Integer, Integer> backFaceRelativeOrientation = new HashMap<>();
-        //    (what you're referencing -> what you're actually rotating)
-        backFaceRelativeOrientation.put(0,0);
-        backFaceRelativeOrientation.put(1,3);
-        backFaceRelativeOrientation.put(2,5);
-        backFaceRelativeOrientation.put(3,1);
-        backFaceRelativeOrientation.put(4,4);
-        backFaceRelativeOrientation.put(5,2);
-        Face backFace = new Face(new int[][]{ {5,5,5}, {5,5,5}, {5,5,5}}, "back",backFaceRelativeOrientation);
+        Face backFace = new Face(new int[][]{ {5,5,5}, {5,5,5}, {5,5,5}}, "back");
         faces[5] = backFace;
     }
     // the below mappings might need to be updated
@@ -528,19 +476,23 @@ public class Cube {
         return faces[0].getFacelet(2,1)%10 != 0 &&
                 faces[face].getFacelet(0,1)%10 == faces[face].getFacelet(1,1)%10;
     }
-    public boolean middleRowSolved(int face){
-        return (faces[face].getFacelet(1,0)%10 == faces[face].getFacelet(1,1)%10)
-                && (faces[face].getFacelet(1,1)%10 == faces[face].getFacelet(1,2)%10);
+    public boolean rowSolved(int face, int row){
+        return (faces[face].getFacelet(row,0)%10 == faces[face].getFacelet(row,1)%10)
+                && (faces[face].getFacelet(row,1)%10 == faces[face].getFacelet(row,2)%10);
     }
     public boolean secondLayerSolved(){
-        return middleRowSolved(1) && middleRowSolved(2) &&
-                middleRowSolved(3) && middleRowSolved(5);
+        return rowSolved(1,1) && rowSolved(2,1) &&
+                rowSolved(3,1) && rowSolved(5,1);
+    }
+    public boolean firstLayerSolved(){
+        return rowSolved(1,2) && rowSolved(2,2) &&
+                rowSolved(3,2) && rowSolved(5,2);
     }
     public boolean validEdgePieces(){
         // if there are valid edge pieces return true
-        if(faces[0].getFacelet(0,1)%10 != 0 && faces[5].getFacelet(0,1)%10 != 0 &&
-                faces[0].getFacelet(1,0)%10 != 0 && faces[1].getFacelet(0,1)%10 != 0 &&
-                faces[0].getFacelet(2,1)%10 != 0 && faces[2].getFacelet(0,1)%10 != 0 &&
+        if(faces[0].getFacelet(0,1)%10 != 0 && faces[5].getFacelet(0,1)%10 != 0 ||
+                faces[0].getFacelet(1,0)%10 != 0 && faces[1].getFacelet(0,1)%10 != 0 ||
+                faces[0].getFacelet(2,1)%10 != 0 && faces[2].getFacelet(0,1)%10 != 0 ||
                 faces[0].getFacelet(1,2)%10 != 0 && faces[3].getFacelet(0,1)%10 != 0){
             System.out.println(" there are valid edge pieces");
             return true;
@@ -548,59 +500,68 @@ public class Cube {
         System.out.println(" THERE ARE NO VALID EDGE PIECES");
         return false;
     }
-    public void takeOutPiece(){
+    public void takeOutPieceFromRight(){
+        String[] takeOutFromRight = new String[]{"R", "U", "R'", "U'", "F'","U'", "F"};
+        applyRotations(takeOutFromRight);
+    }
+    public void takeOutPieceIfNeeded(){
         for(int i = 0; i<4; i++){
-            // right
-            if(faces[0].getFacelet(1,2)%10 != faces[0].getFacelet(1,1)%10){
-                System.out.println("right trigger");
-                applyRotations(rightTrigger);
-                return;
-            }
-            // left
-            if(faces[0].getFacelet(1,0)%10 != faces[0].getFacelet(1,1)%10){
-                System.out.println("left trigger");
-                applyRotations(leftTrigger);
-                return;
+            if(faces[2].getFacelet(1,2)%10 != faces[2].getFacelet(1,1)%10
+                    && faces[3].getFacelet(1,0)%10 != faces[3].getFacelet(1,1)%10){
+                System.out.println("should take out piece");
+                takeOutPieceFromRight();
             }
             rotateCubeLeft();
         }
-    }
+        System.out.println("shouldn't take out piece");
 
+    }
 
     // step 4 - solve the second layer
     public void solveSecondLayer(){
         String[] toTheRight = new String[]{"U","R","U","R'","U'","F'","U'","F"};
         String[] toTheLeft = new String[]{"U'","L'","U'","L","U","F","U","F'"};
         System.out.println(" ^^^^^^^^^ THIS IS THE START ^^^^^^^^^^");
-        xLoop:
-        for (int i = 0; i < 4; i++) { // face
-            System.out.println("i: " + i);
-            for (int j = 0; j < 4; j++) { //turn top layer
-                System.out.println("j: " + j);
-                if (isValidPieceInRightSpot(2)) {
-                    System.out.println("valid piece in right spot");
+        int count = 0;
+        while(!secondLayerSolved()){
+            System.out.println("second layer not solved");
+            while(validEdgePieces()){ // pretty sure works
+                xLoop:
+                for (int i = 0; i < 4; i++) { // face
+                    System.out.println("i: " + i);
+                    for (int j = 0; j < 4; j++) { //turn top layer
+                        System.out.println("j: " + j);
+                        if (isValidPieceInRightSpot(2)) {
+                            System.out.println("valid piece in right spot");
 
-                                // top facelet matches with right face
-                    if (faces[0].getFacelet(2, 1) % 10 == faces[3].getFacelet(1, 1) % 10) {
-                                    System.out.println("top facelet matches with right face");
-                                    applyRotations(toTheRight);
-                                    break xLoop;
+                            // top facelet matches with right face
+                            if (faces[0].getFacelet(2, 1) % 10 == faces[3].getFacelet(1, 1) % 10) {
+                                System.out.println("top facelet matches with right face");
+                                applyRotations(toTheRight);
+                                System.out.println("break xLoop rightn5");
+                                break xLoop;
+                            }
+                            // top facelet matches with the left face
+                            else {
+                                System.out.println("top facelet matches with left face");
+                                applyRotations(toTheLeft);
+                                System.out.println("break xLoop left");
+                                break xLoop;
+                            }
+                        }
+                        System.out.println("Checking with another uplayerClockwise");
+                        upLayerClockwise();
                     }
-                                // top facelet matches with the left face
-                    else {
-                                    System.out.println("top facelet matches with left face");
-                                    applyRotations(toTheLeft);
-                                    break xLoop;
-                    }
+                    System.out.println("checking with another cube rotation left");
+                    rotateCubeLeft();
                 }
-                System.out.println("Checking with another uplayerClockwise");
-                upLayerClockwise();
             }
-            System.out.println("checking with another cube rotation left");
-            rotateCubeLeft();
+            takeOutPieceIfNeeded();
+            count++;
+            if(count == 4){
+                System.exit(0);
+            }
         }
-        System.out.println(" *********** again **********");
-
     }
 
 
@@ -833,34 +794,34 @@ public class Cube {
         cube.faces[4].setFacelets(new int[][]{{04,14,24},{34,44,54},{64,74,84}});
         cube.faces[5].setFacelets(new int[][]{{05,15,25},{35,45,55},{65,75,85}});
          */
-        cube.faces[0].setFacelets(new int[][]{  {15,25,35},
-                                                {42,50,60},
-                                                {70,81,90}});
+        cube.faces[0].setFacelets(new int[][]{  {10,20,32},
+                                                {42,50,62},
+                                                {72,85,90}});
 
-        cube.faces[1].setFacelets(new int[][]{  {13,23,32},
-                                                {41,51,61},
+        cube.faces[1].setFacelets(new int[][]{  {11,21,33},
+                                                {40,51,60},
                                                 {71,81,91}});
 
-        cube.faces[2].setFacelets(new int[][]{  {13,20,31},
-                                                {42,52,60},
+        cube.faces[2].setFacelets(new int[][]{  {10,23,33},
+                                                {45,52,65},
                                                 {72,82,92}});
 
-        cube.faces[3].setFacelets(new int[][]{  {12,23,31},
-                                                {42,53,63},
+        cube.faces[3].setFacelets(new int[][]{  {15,23,30},
+                                                {41,53,62},
                                                 {73,83,93}});
 
         cube.faces[4].setFacelets(new int[][]{  {14,24,34},
                                                 {44,54,64},
                                                 {74,84,94}});
 
-        cube.faces[5].setFacelets(new int[][]{  {10,20,30},
-                                                {45,55,65},
+        cube.faces[5].setFacelets(new int[][]{  {11,23,35},
+                                                {40,55,61},
                                                 {75,85,95}});
 
         cube.printCube();
         cube.solveSecondLayer();
         cube.printCube();
-        /*
+/*
         cube.printCube();
         cube.makeYellowCross();
         cube.printCube();
@@ -872,7 +833,11 @@ public class Cube {
         cube.cycleTopLayerEdges();
         cube.printCube();
 
-         */
+
+ */
+
+
+
 
 
 
