@@ -472,7 +472,111 @@ public class Cube {
         return false;
     }
 
+    public void printWhiteEdgeLocations(){
+        for(int face = 0; face<6; face++){
+            for(int r = 0; r<3; r++){
+                for(int c = 0; c<3; c++){
+                    if(faces[face].getFacelet(r,c)%10 == 4 && ((r+c)%2 != 0)){
+                        System.out.println(" face: " + face + " r: " + r + " c: " + c );
+                    }
+                }
+            }
+        }
+    }
 
+    public boolean daisyCompleted(int f){
+        if (faces[f].getFacelet(0, 1) % 10 == 4 &&
+            faces[f].getFacelet(1, 0) % 10 == 4 &&
+            faces[f].getFacelet(1, 2) % 10 == 4 &&
+            faces[f].getFacelet(2, 1) % 10 == 4){
+            return true;
+        }
+        return false;
+
+    }
+    public boolean bottomHasWhiteEdges(){
+        if (faces[4].getFacelet(0, 1) % 10 == 4 ||
+                faces[4].getFacelet(1, 0) % 10 == 4 ||
+                faces[4].getFacelet(1, 2) % 10 == 4 ||
+                faces[4].getFacelet(2, 1) % 10 == 4){
+            return true;
+        }
+        return false;
+    }
+    // step 1 - making the daisy
+    public void makeTheDaisy(){
+        for(int i = 0; i<4; i++){
+            if(daisyCompleted(0)){
+                return;
+            }
+            // case 1
+            if(faces[2].getFacelet(1,0)%10 == 4){
+                while(faces[0].getFacelet(1,0)%10==4){
+                    upLayerClockwise();
+                }
+                applyRotations(new String[]{"L'"});
+            }
+            //case 2
+            if(faces[2].getFacelet(1,2)%10 == 4){
+                while(faces[0].getFacelet(1,2)%10==4){
+                    upLayerClockwise();
+                }
+                applyRotations(new String[]{"R"});
+            }
+            //case 3
+            if(faces[2].getFacelet(0,1)%10 == 4 || faces[2].getFacelet(2,1)%10 == 4){
+                while(faces[0].getFacelet(2,1)%10 == 4){
+                    upLayerClockwise();
+                }
+                applyRotations(new String[]{"F"});
+                if(faces[2].getFacelet(1,0)%10 == 4){
+                    while(faces[0].getFacelet(1,0)%10==4){
+                        upLayerClockwise();
+                    }
+                    applyRotations(new String[]{"L'"});
+                }
+                //case 2
+                if(faces[2].getFacelet(1,2)%10 == 4){
+                    while(faces[0].getFacelet(1,2)%10==4){
+                        upLayerClockwise();
+                    }
+                    applyRotations(new String[]{"R"});
+                }
+            }
+            rotateCubeLeft();
+        }
+        // outside case - bottom face
+        if(daisyCompleted(0)){
+            return;
+        }
+        while(bottomHasWhiteEdges()){//botton has white edges){
+            while(faces[4].getFacelet(1, 2) % 10 != 4){
+                applyRotations(new String[]{"D"});
+            }
+            while(faces[0].getFacelet(1, 2) % 10 == 4){
+                applyRotations(new String[]{"U"});
+            }
+            rightLayerClockwise();
+            rightLayerClockwise();
+
+        }
+
+    }
+    // step 2- create the white cross
+    public void createWhiteCross(){
+        System.out.println("WHITE CROSS---------------");
+        int count = 0;
+        for(int i = 0; i < 4; i++) {//!daisyCompleted(4)){
+            while (faces[2].getFacelet(0, 1) % 10 != faces[2].getFacelet(1, 1) % 10 && faces[0].getFacelet(2, 1)%10 == 4) {
+                upLayerCounterClockwise();
+            }
+            applyRotations(new String[]{"F2"});
+            count += 1;
+            rotateCubeLeft();
+        }
+
+
+    }
 
     // careful this method requires that the bottom layer isn't solved, and the top face has a white piece
     public void placeWhiteOverNonWhite(){
@@ -883,49 +987,55 @@ public class Cube {
         cube.faces[4].setFacelets(new int[][]{{04,14,24},{34,44,54},{64,74,84}});
         cube.faces[5].setFacelets(new int[][]{{05,15,25},{35,45,55},{65,75,85}});
          */
-        cube.faces[0].setFacelets(new int[][]{  {11,20,30},
+        cube.faces[0].setFacelets(new int[][]{  {15,22,35},
                                                 {43,50,65},
-                                                {75,80,94}});
+                                                {70,84,93}});
 
-        cube.faces[1].setFacelets(new int[][]{  {12,20,33},
-                                                {41,51,61},
-                                                {73,81,90}});
+        cube.faces[1].setFacelets(new int[][]{  {13,24,31},
+                                                {42,51,63},
+                                                {74,81,95}});
 
-        cube.faces[2].setFacelets(new int[][]{  {14,25,31},
+        cube.faces[2].setFacelets(new int[][]{  {12,21,34},
                                                 {45,52,62},
-                                                {72,82,93}});
+                                                {71,82,94}});
 
-        cube.faces[3].setFacelets(new int[][]{  {15,23,35},
-                                                {40,53,63},
-                                                {72,83,93}});
+        cube.faces[3].setFacelets(new int[][]{  {15,21,31},
+                                                {44,53,64},
+                                                {72,85,90}});
 
-        cube.faces[4].setFacelets(new int[][]{  {11,24,30},
-                                                {44,54,64},
-                                                {74,84,95}});
+        cube.faces[4].setFacelets(new int[][]{  {14,23,33},
+                                                {40,54,60},
+                                                {71,10,92}});
 
-        cube.faces[5].setFacelets(new int[][]{  {11,21,34},
-                                                {42,55,62},
-                                                {70,85,92}});
+        cube.faces[5].setFacelets(new int[][]{  {10,20,30},
+                                                {45,55,61},
+                                                {73,83,92}});
 
+        cube.printCube();
+        cube.printWhiteEdgeLocations();
+        cube.makeTheDaisy();
+        cube.printCube();
+        cube.createWhiteCross();
         cube.printCube();
         cube.solveBottomLayer();
         cube.printCube();
-       // cube.solveSecondLayer();
-        // cube.printCube();
-/*
+
+        cube.solveSecondLayer();
         cube.printCube();
+
         cube.makeYellowCross();
-        cube.printCube();
+
         cube.printCube();
         cube.solveYellowFace();
         cube.printCube();
+
         cube.positionTheCorners();
         cube.printCube();
+
         cube.cycleTopLayerEdges();
         cube.printCube();
 
 
- */
 
 
 
