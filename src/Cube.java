@@ -1,9 +1,14 @@
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.function.Function;
 
 public class Cube {
     public Face[] faces;
+    int steps;
 
     public Cube(){
         faces = new Face[6];
@@ -26,6 +31,8 @@ public class Cube {
         HashMap<Integer, Integer> backFaceRelativeOrientation = new HashMap<>();
         Face backFace = new Face(new int[][]{ {5,5,5}, {5,5,5}, {5,5,5}}, "back");
         faces[5] = backFace;
+
+        steps = 0;
     }
     // the below mappings might need to be updated
     // 0 -> yellow(up)
@@ -112,6 +119,7 @@ public class Cube {
             faces[face].updateFacelet(row,0,faces[face].getFacelet(row, 2));
             faces[face].updateFacelet(row,2, temp2);
         }
+        steps+=1;
     }
     public void faceCounterClockwise(int face){
         int temp = 0;
@@ -133,6 +141,7 @@ public class Cube {
             faces[face].updateFacelet(0,col,faces[face].getFacelet(2, col));
             faces[face].updateFacelet(2,col, temp2);
         }
+        steps+=1;
     }
 
     public int[] arrayCopy(int[] arr){
@@ -968,7 +977,21 @@ public class Cube {
     }
 
 
+    // everything together
+    public void solveCube(){
+        printCube();
+        makeTheDaisy();
+        createWhiteCross();
+        solveBottomLayer();
+        solveSecondLayer();
+        makeYellowCross();
+        solveYellowFace();
+        positionTheCorners();
+        cycleTopLayerEdges();
+        printCube();
 
+        System.out.println("took " + steps + " steps to solve the cube");
+    }
 
     public static void main(String[] args) {
         Cube cube = new Cube();
@@ -1011,37 +1034,35 @@ public class Cube {
                                                 {45,55,61},
                                                 {73,83,92}});
 
-        cube.printCube();
-        cube.printWhiteEdgeLocations();
-        cube.makeTheDaisy();
-        cube.printCube();
-        cube.createWhiteCross();
-        cube.printCube();
-        cube.solveBottomLayer();
-        cube.printCube();
+        String path = "src/cubeConfig.csv";
+        String line = "";
+        int face = 0;
+        int value = 0;
+        try{
+            BufferedReader br = new BufferedReader(new FileReader(path));
+            while((line = br.readLine())!=null){
+                String[] values = line.split(",");
+                System.out.println(Arrays.toString(values));
+                value = 0;
+                for(int r = 0; r<3; r++) {
+                    for (int c = 0; c < 3; c++) {
+                        cube.faces[face].updateFacelet(r, c, Integer.parseInt(values[value]));
+                        value += 1;
+                        System.out.println("value: " + value);
+                    }
+                }
+                face+=1;
+                System.out.println("face: " + face);
+            }
+        }
+        catch (FileNotFoundException e){
+            e.printStackTrace();
+        }
+        catch(IOException e){
+            e.printStackTrace();
+        }
 
-        cube.solveSecondLayer();
-        cube.printCube();
-
-        cube.makeYellowCross();
-
-        cube.printCube();
-        cube.solveYellowFace();
-        cube.printCube();
-
-        cube.positionTheCorners();
-        cube.printCube();
-
-        cube.cycleTopLayerEdges();
-        cube.printCube();
-
-
-
-
-
-
-
-
+        cube.solveCube();
     }
 }
 
